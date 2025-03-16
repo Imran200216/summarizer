@@ -18,4 +18,7 @@ class AppColors {
   /// toast color
   static Color successToastColor = const Color(0xFF02A75A);
   static Color failureToastColor = const Color(0xFFD92F54);
+
+  /// dotted border color
+  static Color dottedBorder = Colors.grey.shade400;
 }

@@ -1,19 +1,27 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
+import 'package:summarize/commons/provider/internet_checker_provider.dart';
 import 'package:summarize/core/router/app_router.dart';
 import 'package:summarize/features/auth/view_modal/email_password_auth_provider.dart';
 import 'package:summarize/features/auth/view_modal/google_sign_in_provider.dart';
 import 'package:summarize/features/auth/view_modal/page_provider.dart';
+import 'package:summarize/features/datas/view_modals/summary_datas_provider.dart';
 import 'package:summarize/features/home/view_modal/navigation_provider.dart';
 import 'package:summarize/features/summarizer/view_modals/summarizer_text_provider.dart';
+import 'package:summarize/firebase_options.dart';
+import 'package:toastification/toastification.dart';
 
 import 'core/themes/app_colors.dart';
 
-void main() async {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  /// firebase
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   /// hive
   await Hive.initFlutter();
@@ -53,6 +61,12 @@ class _MyAppState extends State<MyApp> {
         ChangeNotifierProvider(
           create: (context) => EmailPasswordAuthProvider(),
         ),
+
+        /// internet provider
+        ChangeNotifierProvider(create: (context) => InternetCheckerProvider()),
+
+        /// summary data provider
+        ChangeNotifierProvider(create: (context) => SummaryDataProvider()),
       ],
       builder: (context, child) {
         return ScreenUtilInit(
@@ -60,16 +74,18 @@ class _MyAppState extends State<MyApp> {
           minTextAdapt: true,
           splitScreenMode: true,
           builder: (context, child) {
-            return MaterialApp.router(
-              debugShowCheckedModeBanner: false,
-              title: 'Summarizer',
-              theme: ThemeData(
-                textTheme: GoogleFonts.poppinsTextTheme(),
-                colorScheme: ColorScheme.fromSeed(
-                  seedColor: AppColors.primaryColor,
+            return ToastificationWrapper(
+              child: MaterialApp.router(
+                debugShowCheckedModeBanner: false,
+                title: 'Summarizer',
+                theme: ThemeData(
+                  textTheme: GoogleFonts.poppinsTextTheme(),
+                  colorScheme: ColorScheme.fromSeed(
+                    seedColor: AppColors.primaryColor,
+                  ),
                 ),
+                routerConfig: AppRouter.router,
               ),
-              routerConfig: AppRouter.router,
             );
           },
         );

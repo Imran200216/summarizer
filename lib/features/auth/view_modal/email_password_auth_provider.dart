@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:summarize/core/helper/toast_helper.dart';
 
 class EmailPasswordAuthProvider extends ChangeNotifier {
-  /// loading state
+  /// Loading state
   bool _isLoading = false;
 
   bool get isLoading => _isLoading;
@@ -15,31 +15,50 @@ class EmailPasswordAuthProvider extends ChangeNotifier {
   }
 
   /// Sign up with email and password
-  Future<void> signUpWithEmailPassword(
+  Future<bool> signUpWithEmailPassword(
     String emailAddress,
     String password,
     BuildContext context,
   ) async {
     _setLoading(true);
     try {
-      await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: emailAddress,
-        password: password,
-      );
+      print("🔄 Signing up user: $emailAddress");
 
-      /// storing the user data in the db
-      await FirebaseFirestore.instance.collection("users").doc().set({
-        "userEmail": emailAddress,
-        "userUID": FirebaseAuth.instance.currentUser!.uid,
-      });
+      UserCredential userCredential = await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(
+            email: emailAddress,
+            password: password,
+          );
+
+      User? user = userCredential.user;
+      if (user == null) {
+        print("❌ Firebase returned null user after signup.");
+        throw Exception("User creation failed.");
+      }
+
+      print("✅ User created successfully: UID = ${user.uid}");
+
+      /// Storing the user data in Firestore
+      await FirebaseFirestore.instance
+          .collection("users")
+          .doc(user.uid) // Use UID as document ID
+          .set({
+            "userEmail": emailAddress,
+            "userUID": user.uid,
+          }, SetOptions(merge: true));
+
+      print("✅ User details stored in Firestore");
 
       ToastHelper.showSuccessToast(
         context: context,
-        message: "Authentication Success",
+        message: "Authentication Successful",
       );
 
-      notifyListeners();
+      _setLoading(false);
+      return true;
     } on FirebaseAuthException catch (e) {
+      print("❌ FirebaseAuthException: ${e.code} - ${e.message}");
+
       if (e.code == 'weak-password') {
         ToastHelper.showErrorToast(
           context: context,
@@ -50,38 +69,51 @@ class EmailPasswordAuthProvider extends ChangeNotifier {
           context: context,
           message: "Account already exists",
         );
+      } else {
+        ToastHelper.showErrorToast(
+          context: context,
+          message: "Authentication failed: ${e.message}",
+        );
       }
 
-      notifyListeners();
-    } catch (e) {
-      ToastHelper.showErrorToast(context: context, message: e.toString());
-      notifyListeners();
-    } finally {
       _setLoading(false);
+      return false;
+    } catch (e) {
+      print("❌ General Exception: $e");
+      ToastHelper.showErrorToast(
+        context: context,
+        message: "Error: ${e.toString()}",
+      );
+      _setLoading(false);
+      return false;
     }
-
-    notifyListeners();
   }
 
   /// Sign in with email and password
-  Future<void> signInWithEmailPassword(
+  Future<bool> signInWithEmailPassword(
     String emailAddress,
     String password,
     BuildContext context,
   ) async {
     _setLoading(true);
     try {
-      await FirebaseAuth.instance
-          .signInWithEmailAndPassword(email: emailAddress, password: password)
-          .then((value) {
-            ToastHelper.showSuccessToast(
-              context: context,
-              message: "Sign In Successfull",
-            );
-          });
+      print("🔄 Signing in user: $emailAddress");
 
-      notifyListeners();
+      UserCredential userCredential = await FirebaseAuth.instance
+          .signInWithEmailAndPassword(email: emailAddress, password: password);
+
+      print("✅ User signed in successfully: UID = ${userCredential.user?.uid}");
+
+      ToastHelper.showSuccessToast(
+        context: context,
+        message: "Sign In Successful",
+      );
+
+      _setLoading(false);
+      return true;
     } on FirebaseAuthException catch (e) {
+      print("❌ FirebaseAuthException: ${e.code} - ${e.message}");
+
       if (e.code == 'user-not-found') {
         ToastHelper.showErrorToast(
           context: context,
@@ -92,13 +124,23 @@ class EmailPasswordAuthProvider extends ChangeNotifier {
           context: context,
           message: "Incorrect password!",
         );
+      } else {
+        ToastHelper.showErrorToast(
+          context: context,
+          message: "Authentication failed: ${e.message}",
+        );
       }
 
-      notifyListeners();
-    } finally {
       _setLoading(false);
+      return false;
+    } catch (e) {
+      print("❌ General Exception: $e");
+      ToastHelper.showErrorToast(
+        context: context,
+        message: "Error: ${e.toString()}",
+      );
+      _setLoading(false);
+      return false;
     }
-
-    notifyListeners();
   }
 }
