@@ -143,4 +143,52 @@ class EmailPasswordAuthProvider extends ChangeNotifier {
       return false;
     }
   }
+
+  /// Send password reset email
+  Future<bool> sendPasswordResetEmail(
+    String emailAddress,
+    BuildContext context,
+  ) async {
+    _setLoading(true);
+    try {
+      print("🔄 Sending password reset email to: $emailAddress");
+
+      await FirebaseAuth.instance.sendPasswordResetEmail(email: emailAddress);
+
+      print("✅ Password reset email sent successfully");
+
+      ToastHelper.showSuccessToast(
+        context: context,
+        message: "Password reset link sent to your email",
+      );
+
+      _setLoading(false);
+      return true;
+    } on FirebaseAuthException catch (e) {
+      print("❌ FirebaseAuthException: ${e.code} - ${e.message}");
+
+      if (e.code == 'user-not-found') {
+        ToastHelper.showErrorToast(
+          context: context,
+          message: "No user found for that email.",
+        );
+      } else {
+        ToastHelper.showErrorToast(
+          context: context,
+          message: "Error: ${e.message}",
+        );
+      }
+
+      _setLoading(false);
+      return false;
+    } catch (e) {
+      print("❌ General Exception: $e");
+      ToastHelper.showErrorToast(
+        context: context,
+        message: "Error: ${e.toString()}",
+      );
+      _setLoading(false);
+      return false;
+    }
+  }
 }

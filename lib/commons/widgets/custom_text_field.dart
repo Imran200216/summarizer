@@ -3,9 +3,10 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:summarize/core/themes/app_colors.dart';
 
 class CustomTextField extends StatefulWidget {
+  final FocusNode? focusNode; // Add FocusNode
   final bool readOnly;
   final String hintText;
-  final String labelText; // New label text
+  final String labelText;
   final IconData prefixIcon;
   final bool isPassword;
   final bool hasBorder;
@@ -18,7 +19,7 @@ class CustomTextField extends StatefulWidget {
   const CustomTextField({
     super.key,
     required this.hintText,
-    required this.labelText, // Added labelText parameter
+    required this.labelText,
     required this.prefixIcon,
     this.isPassword = false,
     this.hasBorder = true,
@@ -28,6 +29,7 @@ class CustomTextField extends StatefulWidget {
     this.validator,
     this.onChanged,
     this.readOnly = false,
+    this.focusNode, // Add focusNode parameter
   });
 
   @override
@@ -35,11 +37,24 @@ class CustomTextField extends StatefulWidget {
 }
 
 class _CustomTextFieldState extends State<CustomTextField> {
-  bool _isObscure = true;
+  late FocusNode _focusNode;
+
+  @override
+  void initState() {
+    super.initState();
+    _focusNode = widget.focusNode ?? FocusNode();
+  }
+
+  @override
+  void dispose() {
+    _focusNode.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      focusNode: _focusNode, // Attach the FocusNode
       autocorrect: true,
       readOnly: widget.readOnly,
       onChanged: widget.onChanged,
@@ -54,7 +69,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
         fontSize: 13.sp,
         color: AppColors.titleColor,
       ),
-      obscureText: widget.isPassword ? _isObscure : false,
+      obscureText: widget.isPassword,
       decoration: InputDecoration(
         fillColor: AppColors.whiteColor,
         filled: true,
@@ -66,24 +81,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
                     color: AppColors.outlinedBtnBorderColor,
                     width: 1,
                   )
-                  : BorderSide.none, // No border if hasBorder is false
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(6.r),
-          borderSide:
-              widget.hasBorder
-                  ? BorderSide(
-                    color: AppColors.outlinedBtnBorderColor,
-                    width: 1,
-                  )
-                  : BorderSide.none, // No border if hasBorder is false
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(6.r),
-          borderSide:
-              widget.hasBorder
-                  ? BorderSide(color: AppColors.primaryColor, width: 1.5)
-                  : BorderSide.none, // No border if hasBorder is false
+                  : BorderSide.none,
         ),
         hintText: widget.hintText,
         hintStyle: TextStyle(
@@ -93,7 +91,6 @@ class _CustomTextFieldState extends State<CustomTextField> {
           color: AppColors.textFieldHintColor,
         ),
         labelText: widget.labelText,
-        // Ensures the label text appears initially
         labelStyle: TextStyle(
           fontFamily: "DM Sans",
           fontWeight: FontWeight.w600,
@@ -101,28 +98,6 @@ class _CustomTextFieldState extends State<CustomTextField> {
           color: AppColors.textFieldHintColor,
         ),
         prefixIcon: Icon(widget.prefixIcon, color: AppColors.titleColor),
-        suffixIcon:
-            widget.isPassword
-                ? IconButton(
-                  icon: Icon(
-                    _isObscure ? Icons.visibility_off : Icons.visibility,
-                    color: AppColors.textFieldHintColor,
-                  ),
-                  onPressed: () {
-                    setState(() {
-                      _isObscure = !_isObscure;
-                    });
-                  },
-                )
-                : null,
-        contentPadding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 12.w),
-        errorStyle: TextStyle(
-          fontFamily: "DM Sans",
-          color: AppColors.errorTextFieldColor,
-          fontSize: 12.sp,
-          fontWeight: FontWeight.w600,
-        ),
-        floatingLabelBehavior: FloatingLabelBehavior.always,
       ),
     );
   }

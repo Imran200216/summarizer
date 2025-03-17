@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -23,42 +22,6 @@ class SummarizerDesktopScreen extends StatelessWidget {
         return Center(
           child: Stack(
             children: [
-              /// Profile section at top-right
-              Positioned(
-                top: 16.h,
-                right: 16.w,
-                child: Padding(
-                  padding: EdgeInsets.only(right: 16.w, top: 16.h),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      /// Profile Photo
-                      CircleAvatar(
-                        radius: 20.r,
-                        backgroundImage:
-                            user?.photoURL != null
-                                ? CachedNetworkImageProvider(user!.photoURL!)
-                                : const AssetImage(
-                                      "assets/images/jpg/person-placeholder.jpeg",
-                                    )
-                                    as ImageProvider, // Default Image
-                      ),
-                      SizedBox(width: 8.w),
-
-                      /// Email Address (Dynamic)
-                      Text(
-                        user?.email ?? "No Email Found",
-                        style: TextStyle(
-                          fontSize: 12.sp,
-                          fontWeight: FontWeight.w500,
-                          color: AppColors.subTitleColor,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-
               /// Main Content - Wrapped in Align for Center Positioning
               Align(
                 alignment: Alignment.center,
@@ -135,7 +98,7 @@ class SummarizerDesktopScreen extends StatelessWidget {
                                                 .maxLengthController,
                                         keyboardType: TextInputType.number,
                                         hintText: "Max Word",
-                                        labelText: "Minimum word",
+                                        labelText: "Maximum word",
                                         prefixIcon: Icons.text_fields_sharp,
                                       ),
                                     ),

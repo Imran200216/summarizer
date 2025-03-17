@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:summarize/core/themes/app_colors.dart';
 import 'package:summarize/features/datas/view/data_screen.dart';
 import 'package:summarize/features/home/view_modal/navigation_provider.dart';
+import 'package:summarize/features/profile/view/profile_screen.dart';
 import 'package:summarize/features/summarizer/view/summarizer_screen.dart';
 
 class HomeDesktopScreen extends StatelessWidget {
@@ -81,15 +82,8 @@ class HomeDesktopScreen extends StatelessWidget {
       case 1:
         return DataScreen();
       case 2:
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          showDialog(
-            context: context,
-            builder: (context) {
-              return Container();
-            },
-          );
-        });
-        return const SizedBox();
+        return ProfileScreen();
+
       default:
         return const SizedBox();
     }

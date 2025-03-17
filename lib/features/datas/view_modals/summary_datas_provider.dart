@@ -15,14 +15,14 @@ class SummaryDataProvider extends ChangeNotifier {
 
   /// Fetch summaries for the logged-in user
   Future<void> fetchUserSummaries() async {
+    if (_isLoading) return; // Prevent multiple calls
+
     _isLoading = true;
     notifyListeners();
 
     try {
       User? user = _auth.currentUser;
-      if (user == null) {
-        _summaries = [];
-      } else {
+      if (user != null) {
         QuerySnapshot snapshot =
             await _firestore
                 .collection("summarizedTexts")
@@ -30,7 +30,7 @@ class SummaryDataProvider extends ChangeNotifier {
                 .orderBy("timestamp", descending: true)
                 .get();
 
-        _summaries =
+        List<Map<String, dynamic>> newSummaries =
             snapshot.docs
                 .map(
                   (doc) => {
@@ -39,12 +39,17 @@ class SummaryDataProvider extends ChangeNotifier {
                   },
                 )
                 .toList();
+
+        if (_summaries != newSummaries) {
+          _summaries = newSummaries;
+          notifyListeners();
+        }
       }
     } catch (e) {
       print("Error fetching summaries: $e");
+    } finally {
+      _isLoading = false;
+      notifyListeners();
     }
-
-    _isLoading = false;
-    notifyListeners();
   }
 }

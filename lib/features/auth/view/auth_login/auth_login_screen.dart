@@ -8,18 +8,26 @@ class AuthLoginScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
     return SafeArea(
-      child: Scaffold(
-        body: LayoutBuilder(
-          builder: (context, constraints) {
-            if (constraints.maxWidth >= 1100) {
-              return AuthLoginDesktopScreen();
-            } else if (constraints.maxWidth >= 650) {
-              return const AuthLoginTabletScreen();
-            } else {
-              return const AuthLoginMobileScreen();
-            }
-          },
+      child: GestureDetector(
+        onTap: () {
+          FocusScope.of(context).unfocus(); // Only dismiss when needed
+        },
+        child: Scaffold(
+          key: scaffoldKey,
+          resizeToAvoidBottomInset: true,
+          body: LayoutBuilder(
+            builder: (context, constraints) {
+              if (constraints.maxWidth >= 1100) {
+                return AuthLoginDesktopScreen();
+              } else if (constraints.maxWidth >= 650) {
+                return AuthLoginTabletScreen();
+              } else {
+                return AuthLoginMobileScreen();
+              }
+            },
+          ),
         ),
       ),
     );

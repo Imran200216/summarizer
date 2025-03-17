@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:summarize/features/auth/view/auth_login/auth_login_desktop_screen.dart';
-import 'package:summarize/features/auth/view/auth_login/auth_login_mobile_screen.dart';
-import 'package:summarize/features/auth/view/auth_login/auth_login_tablet_screen.dart';
+import 'package:summarize/features/auth/view/auth_forget_password/auth_forget_password_desktop_screen.dart';
+import 'package:summarize/features/auth/view/auth_forget_password/auth_forget_password_mobile_screen.dart';
+import 'package:summarize/features/auth/view/auth_forget_password/auth_forget_password_tablet_screen.dart';
 
 class AuthForgetPasswordScreen extends StatelessWidget {
   const AuthForgetPasswordScreen({super.key});
@@ -13,11 +13,11 @@ class AuthForgetPasswordScreen extends StatelessWidget {
         body: LayoutBuilder(
           builder: (context, constraints) {
             if (constraints.maxWidth >= 1100) {
-              return AuthLoginDesktopScreen();
+              return AuthForgetPasswordDesktopScreen();
             } else if (constraints.maxWidth >= 650) {
-              return const AuthLoginTabletScreen();
+              return const AuthForgetPasswordTabletScreen();
             } else {
-              return const AuthLoginMobileScreen();
+              return const AuthForgetPasswordMobileScreen();
             }
           },
         ),

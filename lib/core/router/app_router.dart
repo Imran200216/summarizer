@@ -4,6 +4,7 @@ import 'package:summarize/features/auth/view/auth_login/auth_login_screen.dart';
 import 'package:summarize/features/auth/view/auth_sign_up/auth_sign_up_screen.dart';
 import 'package:summarize/features/datas/view/data_screen.dart';
 import 'package:summarize/features/home/view/home_screen.dart';
+import 'package:summarize/features/profile/view/profile_screen.dart';
 import 'package:summarize/features/splash/view/splash_screen.dart';
 
 class AppRouter {
@@ -50,6 +51,13 @@ class AppRouter {
         path: '/data',
         name: 'data',
         builder: (context, state) => const DataScreen(),
+      ),
+
+      /// profile screen
+      GoRoute(
+        path: '/profile',
+        name: 'profile',
+        builder: (context, state) => const ProfileScreen(),
       ),
     ],
   );

@@ -96,7 +96,7 @@ class GoogleSignInProvider extends ChangeNotifier {
   }
 
   /// Sign out
-  Future<void> logout() async {
+  Future<bool> logout() async {
     _setLoading(true);
     try {
       if (!kIsWeb) {
@@ -104,10 +104,12 @@ class GoogleSignInProvider extends ChangeNotifier {
       }
       await FirebaseAuth.instance.signOut();
       _user = null;
+      _setLoading(false);
+      return true; // Logout successful
     } catch (e) {
       print('Error signing out: $e');
-    } finally {
       _setLoading(false);
+      return false; // Logout failed
     }
   }
 

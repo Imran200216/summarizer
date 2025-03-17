@@ -15,9 +15,9 @@ class AuthSignUpScreen extends StatelessWidget {
             if (constraints.maxWidth >= 1100) {
               return AuthSignUpDesktopScreen();
             } else if (constraints.maxWidth >= 650) {
-              return const AuthSignUpTabletScreen();
+              return AuthSignUpTabletScreen();
             } else {
-              return const AuthSignUpMobileScreen();
+              return AuthSignUpMobileScreen();
             }
           },
         ),
